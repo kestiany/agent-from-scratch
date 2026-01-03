@@ -1,4 +1,7 @@
 from agent.state import AgentState
+from agent.think import think
+from agent.action import action
+from agent.evaluate import evaluate
 
 class AgentKernel:
     def __init__(self, max_steps: int = 5):
@@ -8,9 +11,9 @@ class AgentKernel:
         state: AgentState = self._init_state(user_input)
 
         while self._should_continue(state):
-            state = self._think(state)
-            state = self._act(state)
-            state = self._evaluate(state)
+            state = think(state)
+            state = action(state)
+            state = evaluate(state)
 
         return self._finalize(state)
     
@@ -40,26 +43,3 @@ class AgentKernel:
             and state["current_step"] < self.max_steps
         )
 
-    def _think(self, state: AgentState) -> AgentState:
-        if not state["plan"] and not state["done"]:
-            state["objective"] = state["user_input"]
-            state["plan"] = [
-                "理解任务",
-                "拆解步骤",
-                "执行任务",
-                "总结结果"
-            ]
-            state["history"].append("生成初始计划")
-        return state
-    
-    def _act(self, state: AgentState) -> AgentState:
-        step = state["plan"][state["current_step"]]
-        state["scratchpad"].append(f"正在执行：{step}")
-        state["history"].append(f"执行步骤 {state['current_step']}: {step}")
-        return state
-
-    def _evaluate(self, state: AgentState) -> AgentState:
-        state["current_step"] += 1
-        if state["current_step"] >= len(state["plan"]):
-            state["done"] = True
-        return state
