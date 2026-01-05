@@ -73,3 +73,16 @@ Agent 在以下任一条件满足时停止运行：
 ## 🟦 Day 5：跑起来（哪怕很蠢）
 
 [main](../src/main.py)
+
+## Week 1 Summary
+
+At the end of Week 1, the agent system has:
+- A clearly defined execution boundary
+- An explicit AgentState as the core abstraction
+- A minimal but complete control loop (think / act / evaluate)
+
+Key trade-offs:
+- Planning is static and simplistic
+- Evaluation only determines completion, not quality
+
+These limitations are intentional and will be addressed in future iterations.
