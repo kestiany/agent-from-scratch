@@ -1,4 +1,6 @@
-from typing import TypedDict, List, Optional
+from typing import TypedDict, List, Optional, Literal
+
+ControlDecision = Literal["continue", "retry", "replan"]
 
 class AgentState(TypedDict):
     # origin input
@@ -30,4 +32,14 @@ class AgentState(TypedDict):
 
     # execution history (for trace & explain)
     history: List[str]
-    
+
+    # step exec info
+    step_success: bool
+    retry_count: int
+    max_retry: int
+
+    last_failure: Optional[str]
+
+    # reflection output
+    control_decision: Optional[ControlDecision]
+

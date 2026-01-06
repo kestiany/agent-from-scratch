@@ -2,6 +2,7 @@ from agent.state import AgentState
 from agent.think import think
 from agent.action import action
 from agent.evaluate import evaluate
+from agent.reflect import reflect
 
 class AgentKernel:
     def __init__(self, max_steps: int = 5):
@@ -14,6 +15,11 @@ class AgentKernel:
             state = think(state)
             state = action(state)
             state = evaluate(state)
+
+            if self._should_reflect(state):
+                state = reflect(state)
+            
+            state = self._apply_control_decision(state)
 
         return self._finalize(state)
     
@@ -42,4 +48,30 @@ class AgentKernel:
             not state["done"] 
             and state["current_step"] < self.max_steps
         )
+    
+    def _should_reflect(self, state: AgentState) -> bool:
+        return True
+    
+    def _apply_control_decision(self, state: AgentState) -> AgentState:
+        decision = state["control_decision"]
+
+        if decision == "continue":
+            state["current_step"] += 1
+            state["retry_count"] = 0
+        elif decision == "retry":
+            state["retry_count"] += 1
+
+            if state["retry_count"] >= state["max_retry"]:
+                state["last_failure"] = "retry_exceeded"
+                state["control_decision"] = None
+            else:
+                # retry current step
+                pass
+        elif decision == "replan":
+            state["plan"] = []
+            state["current_step"] = 0
+            state["retry_count"] = 0
+            state["control_decision"] = None
+        
+        return state
 
