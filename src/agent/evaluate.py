@@ -1,7 +1,13 @@
 from agent.state import AgentState
 
 def evaluate(state: AgentState) -> AgentState:
-    state["current_step"] += 1
-    if state["current_step"] >= len(state["plan"]):
-        state["done"] = True
+    step = state["plan"][state["current_step"]]
+
+    if step == "risk_detection" and not state["memory"]:
+        state["step_success"] = False
+        state["last_failure"] = "no_risk_found"
+
+    state["history"].append(
+        f"Evaluate: {step}, success={state['step_success']}"
+    )
     return state

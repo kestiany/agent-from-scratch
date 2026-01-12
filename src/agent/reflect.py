@@ -8,12 +8,13 @@ def reflect(state: AgentState) -> AgentState:
 
     failure = state["last_failure"]
 
-    if failure is None:
-        decision: ControlDecision = "continue"
-    elif "network" in failure:
-        decision = "retry"
+    if state["step_success"]:
+        decision: ControlDecision = "continue"  
     else:
-        decision = "replan"
+        if state["retry_count"] < state["max_retry"]:
+            decision = "retry"
+        else:
+            decision = "replan"
 
     state["control_decision"] = decision
     state["history"].append(f"[Reflection] decision={decision}, failure={failure}")

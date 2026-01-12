@@ -26,15 +26,25 @@ class AgentKernel:
     def _init_state(self, user_input: str) -> AgentState:
         return {
             "user_input": user_input,
-            "objective": "",
-            "plan": [],
+            "objective": "Analyze code and identify potential risks",
+            "plan": [
+                "understanding",
+                "risk_detection",
+                "risk_qualification",
+                "reporting"
+            ],
             "current_step": 0,
             "scratchpad": [],
             "final_output": None,
-            "history": [],
             "done": False,
             "step_context": None,
-            "memory": []
+            "memory": [],
+            "history": [],
+            "step_success": False,
+            "retry_count": 0,
+            "max_retry": 2,
+            "last_failure": None,
+            "control_decision": None
         }
 
     def _finalize(self, state: AgentState) -> AgentState:
