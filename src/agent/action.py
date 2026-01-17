@@ -9,7 +9,7 @@ def action(state: AgentState) -> AgentState:
             "id": str(uuid.uuid4()),
             "title": "潜在空指针风险",
             "description": "某方法返回值在使用前未进行 null 判断",
-            "suggestion": "在使用返回值前增加 null 判断",
+            "implication": "可能导致运行时空指针异常",
             "severity": "high",
             "confidence": "low",   # 注意：初始是低
             "type": "method",

@@ -43,3 +43,10 @@ class AgentState(TypedDict):
     # reflection output
     control_decision: Optional[ControlDecision]
 
+    # 是否信息不足
+    insufficient_info: bool
+    # 系统级置信度
+    confidence_level: float
+    terminated: bool
+    termination_reason: Optional[str]
+

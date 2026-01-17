@@ -14,7 +14,9 @@ def reflect(state: AgentState) -> AgentState:
         if state["retry_count"] < state["max_retry"]:
             decision = "retry"
         else:
-            decision = "replan"
+            #decision = "replan"
+            state["terminated"] = True
+            state["termination_reason"] = "retry_exceeded"
 
     state["control_decision"] = decision
     state["history"].append(f"[Reflection] decision={decision}, failure={failure}")

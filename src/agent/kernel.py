@@ -3,12 +3,13 @@ from agent.think import think
 from agent.action import action
 from agent.evaluate import evaluate
 from agent.reflect import reflect
+from agent.result import AgentResult
 
 class AgentKernel:
     def __init__(self, max_steps: int = 5):
         self.max_steps = max_steps
 
-    def run(self, user_input: str) -> AgentState:
+    def run(self, user_input: str) -> AgentResult:
         state: AgentState = self._init_state(user_input)
 
         while self._should_continue(state):
@@ -20,6 +21,9 @@ class AgentKernel:
                 state = reflect(state)
             
             state = self._apply_control_decision(state)
+
+            if state["terminated"]:
+                break
 
         return self._finalize(state)
     
@@ -44,14 +48,28 @@ class AgentKernel:
             "retry_count": 0,
             "max_retry": 2,
             "last_failure": None,
-            "control_decision": None
+            "control_decision": None,
+            "insufficient_info": False,
+            "confidence_level": 1.0,
+            "terminated": False,
+            "termination_reason": None
         }
 
-    def _finalize(self, state: AgentState) -> AgentState:
-        if state["current_step"] >= len(state["plan"]):
-            state["final_output"] = "\n".join(state["scratchpad"])
-            state["history"].append("任务完成")
-        return state
+    def _finalize(self, state: AgentState) -> AgentResult:
+        if state["terminated"]:
+            status = "terminated"
+        elif state["insufficient_info"]:
+            status = "insufficient_info"
+        else:
+            status = "completed"
+        
+        return {
+            "status": status,
+            "confidence": state["confidence_level"],
+            "final_output": state["final_output"],
+            "termination_reason": state["termination_reason"],
+            "history": state["history"],
+        }
 
     def _should_continue(self, state: AgentState) -> bool:
         return (
