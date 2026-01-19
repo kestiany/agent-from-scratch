@@ -1,4 +1,4 @@
-# Agent Learning Journey · Week 02 Design
+# Agent Learning Journey · Week 03 Design
 
 > **主题**：任务可以失败，但系统不能乱
 >
@@ -6,7 +6,7 @@
 
 ---
 
-## 一、为什么需要 Week 02？
+## 一、为什么需要 Week 03？
 
 在 Week 01 中，我们已经构建了一个最小可运行的 Agent Kernel：
 
@@ -24,11 +24,11 @@ Input → Think → Act → Evaluate → Output
 * 中间产物质量很差，但依然继续执行
 * Agent 无法解释「为什么失败」「下一步该做什么」
 
-Week 02 的设计目标正是解决这个问题。
+Week 03 的设计目标正是解决这个问题。
 
 ---
 
-## 二、Week 02 的设计原则
+## 二、Week 03 的设计原则
 
 ### 原则 1：失败是常态，而不是异常
 
@@ -58,7 +58,7 @@ Week 02 的设计目标正是解决这个问题。
 
 ### 1. 决策枚举
 
-我们在 Week 02 中引入了一个明确的控制决策枚举：
+我们在 Week 03 中引入了一个明确的控制决策枚举：
 
 ```python
 ControlDecision = Literal[
@@ -149,7 +149,7 @@ state["control_decision"]
 
 ### 2. Retry 相关状态字段
 
-在 Week 02 中，我们引入：
+在 Week 03 中，我们引入：
 
 ```python
 retry_count: int
@@ -165,11 +165,11 @@ last_failure: Optional[str]
 
 ---
 
-## 六、Kernel 在 Week 02 中的角色
+## 六、Kernel 在 Week 03 中的角色
 
 一个关键判断：
 
-> **Week 02 并没有让 Kernel 变聪明，而是让 Kernel 更可靠。**
+> **Week 03 并没有让 Kernel 变聪明，而是让 Kernel 更可靠。**
 
 Kernel 的职责仍然是：
 
@@ -200,9 +200,9 @@ Kernel 的职责仍然是：
 
 ---
 
-## 八、Week 02 的产出总结
+## 八、Week 03 的产出总结
 
-完成 Week 02 后，Agent 系统具备了以下能力：
+完成 Week 03 后，Agent 系统具备了以下能力：
 
 * 任务可以失败，但不会失控
 * 系统行为可解释、可追踪
@@ -216,19 +216,19 @@ Kernel 的职责仍然是：
 
 ## 九、对后续 Weeks 的意义
 
-Week 02 的设计为后续所有能力奠定了基础：
+Week 03 的设计为后续所有能力奠定了基础：
 
 * Week 03 的“可信代码分析”依赖 Reflection
 * Week 04 的“用户可控体验”依赖 Retry / Replan
 * Week 05 之后的多 Agent 协作，依赖清晰的失败边界
 
-如果没有 Week 02，后续所有复杂能力都会退化为不可控的 prompt 拼接。
+如果没有 Week 03，后续所有复杂能力都会退化为不可控的 prompt 拼接。
 
 ---
 
 ## 十、阶段性结论
 
 > **Week 01 解决了“能不能跑”，**
-> **Week 02 解决了“乱不乱”。**
+> **Week 03 解决了“乱不乱”。**
 
 这是 Agent 系统从 Demo 走向工程的第一道分水岭。
