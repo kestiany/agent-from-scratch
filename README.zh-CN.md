@@ -65,17 +65,19 @@
 
 ---
 
-## Agent 执行流程
+## Agent 执行流程（week5）
 
 ````
 
-理解代码
+User Input
 ↓
-风险识别
+PlannerAgent → TaskPlan
 ↓
-风险确认 / 降级
+ExecutorAgent → Workflow / Free Execution
 ↓
-报告生成
+ReviewerAgent
+↓
+Final Output
 
 ```
 
@@ -149,10 +151,14 @@ think → action → evaluate → reflect → decision
 
 ---
 
-## CLI 使用方式
+## CLI 使用方式: 运行
+```python
+python main.py "Your complex task here"
+```
 
-```bash
-python src/main.py
+Example:
+```python
+python main.py "Analyze the risk profile of this project and generate a report"
 ```
 
 ---

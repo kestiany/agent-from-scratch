@@ -64,27 +64,33 @@ This project takes a different stance:
 
 ---
 
-## Agent Workflow
+## Architecture Snapshot (Week 05)
 
 ```
 
-understanding
+User Input
 ↓
-risk_detection
+PlannerAgent → TaskPlan
 ↓
-risk_qualification
+ExecutorAgent → Workflow / Free Execution
 ↓
-reporting
+ReviewerAgent
+↓
+Final Output
 
 ````
 
-Each step is:
+Key Features:
 
-- Explicit
-- Evaluated
-- Reflective
-- Controllable (`continue / retry / replan`)
+Role-based agent architecture
 
+Structured task planning
+
+Reusable domain workflows
+
+CLI runnable entry
+
+Execution trace logging
 ---
 
 ## Core Architecture
@@ -168,27 +174,14 @@ Rules:
 
 ---
 
-## CLI Usage
-
-```bash
-python src/main.py
+## CLI Usage: How to Run
+```python
+python main.py "Your complex task here"
 ```
 
-Example input:
-
-```java
-User user = repository.findById(id);
-return user.getName();
-```
-
-Example output (simplified):
-
-```json
-{
-  "summary": "1 potential risk detected",
-  "confidence": "medium",
-  "limitations": "Single-file static analysis only"
-}
+Example:
+```python
+python main.py "Analyze the risk profile of this project and generate a report"
 ```
 
 ---
