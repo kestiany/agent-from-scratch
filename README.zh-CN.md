@@ -1,191 +1,104 @@
-# 🧠 代码分析 Agent（Week 4）
+# Agent From Scratch
 
-> 一个**可控、可解释、不胡乱编结论**的代码分析 Agent  
-> 当前仅支持 **Java 单文件后端代码分析**
+> 从 **第一性原理** 构建一个可控、可测试、可演进的 Agent 系统。
+
+本仓库记录了一个按周推进的 Agent 架构演化过程。**到第 06 周为止**，系统已经形成一个完整、可追踪、可回放的 Agent 执行内核，而非 Demo 拼装。
 
 🌐 **语言**：简体中文 | [English](README.md)
 
 ---
 
-## 这是什么？
+## ✨ 核心设计理念
 
-这是一个**单一职责的代码分析 Agent**，  
-它只在**明确的能力边界内**对 Java 后端代码进行静态分析。
-
-通过显式的**状态机驱动 + 控制决策机制**，确保：
-
-- 不胡乱推断
-- 不假装确定
-- 在信息不足时明确说明限制
+* **内核优先**：Agent 能力来自清晰的执行循环，而不是 Prompt 技巧
+* **状态显式化**：所有状态变化都可序列化、可调试
+* **Plan → Execute → Review**：任何任务都必须经过评审
+* **默认可追踪**：每次运行都有完整执行轨迹
+* **轻框架**：避免黑盒编排
 
 ---
 
-## 为什么要做这个 Agent？
+## 🧠 第 06 周已完成能力
 
-现有 AI 代码分析工具常见问题：
+### 1️⃣ Agent Kernel（执行内核）
 
-1. 信息不足时依然给出确定结论  
-2. 输出不可解释、无法追溯  
-3. 执行失败后失控继续  
+位置：`src/agent/kernel.py`
 
-本项目的核心理念是：
+职责：
 
-> **少做事，但每一步都可信、可复现、可解释。**
-
----
-
-## 设计原则
-
-- ✅ 单任务 Agent（只做代码分析）
-- ✅ 状态驱动执行（State 是唯一事实来源）
-- ✅ 失败可见、可追踪
-- ✅ 不确定性显式建模
-- ❌ 不猜业务意图
-- ❌ 不做项目级分析
-- ❌ 不运行代码
+* 驱动 Think / Act / Evaluate / Reflect 循环
+* 不包含业务逻辑
+* 保证执行确定性
 
 ---
 
-## 当前支持范围（Week 4）
+### 2️⃣ Planner / Executor / Reviewer 协作闭环
 
-### ✅ 支持
+* Planner 生成 `TaskPlan`
+* Executor 执行子任务
+* Reviewer 判断是否通过
+* 未通过则进入反思或重试
 
-- Java 单文件后端代码
-- 方法级 / 类级风险分析
-- 不确定风险标记（confidence = low）
-- 结构化分析报告
-- CLI 方式运行
-
-### ❌ 不支持
-
-- 项目级依赖分析
-- 跨文件调用关系
-- 运行时行为推断
-- 性能或安全扫描
+这是一个**可读、可调试、可替换**的控制流，而不是 DAG 黑箱。
 
 ---
 
-## Agent 执行流程（week5）
+### 3️⃣ 统一状态与 Schema
 
-````
+* 明确的任务状态：PENDING / IN_PROGRESS / COMPLETED / FAILED
+* 状态是系统唯一事实来源
+* 易于持久化与恢复
 
-User Input
-↓
-PlannerAgent → TaskPlan
-↓
-ExecutorAgent → Workflow / Free Execution
-↓
-ReviewerAgent
-↓
-Final Output
+---
+
+### 4️⃣ Execution Trace（执行轨迹）
+
+每一次运行都会记录：
+
+* Run 生命周期
+* 子任务执行情况
+* Review 结果
+
+为后续的：
+
+* Debug
+* Replay
+* Resume
+  打下基础。
+
+---
+
+## 📂 项目结构
 
 ```
-
-每一步都包含：
-
-- 执行
-- 评估
-- 反思
-- 控制决策（继续 / 重试 / 重规划）
-
----
-
-## 核心架构
-
-### AgentState —— 状态是一等公民
-
-所有 Agent 行为都必须通过状态变化体现。
-
----
-
-### AgentKernel —— 执行与控制中枢
-
-```
-
-think → action → evaluate → reflect → decision
-
-````
-
-约束规则：
-
-- evaluate 不可跳过
-- reflect 必须执行
-- 决策集合有限且明确
-
----
-
-### 风险模型
-
-```json
-{
-  "title": "潜在空指针风险",
-  "severity": "high",
-  "confidence": "medium",
-  "position": "Class.method()"
-}
-````
-
-> **severity 描述影响程度**
-> **confidence 描述判断确定性**
-
----
-
-## 失败与不确定性策略
-
-### 何时返回「信息不足」
-
-* 代码过于简单
-* 无可分析结构
-* 上下文缺失严重
-
-### 何时中止任务
-
-* 输入非代码
-* 多次失败且无法恢复
-
-### 何时降低置信度
-
-* 依赖隐含约定
-* 推断而非确定判断
-* 无法验证上下文
-
----
-
-## CLI 使用方式: 运行
-```python
-python main.py "Your complex task here"
-```
-
-Example:
-```python
-python main.py "Analyze the risk profile of this project and generate a report"
+src/
+├── agent/            # Agent 内核与认知步骤
+├── crew/             # Planner / Executor / Reviewer
+├── orchestration/    # 执行循环与追踪
+├── schema/           # 状态与任务定义
+├── examples/         # 示例
+└── main.py           # CLI 入口
 ```
 
 ---
 
-## 项目结构
+## ▶️ 运行示例
 
-```
-agent-from-scratch/
-├── agent/
-├── src/
-├── README.md
-└── README.zh-CN.md
+```bash
+python ./src/main.py  --show-plan "分析该系统的主要风险"
 ```
 
 ---
 
-## Week 4 完成标准
+## 🧭 接下来（第 07 周以后）
 
-* [x] 状态驱动执行
-* [x] 全流程可追溯
-* [x] 不确定性显式输出
-* [x] 失败可控
-* [x] 可本地演示
+* 基于 Trace 的中断 / 恢复
+* Memory Layer（长期 / 短期）
+* Tool 执行隔离
+* 多方案对比
 
 ---
 
-## 一句话总结
+## 📜 License
 
-> **这是一个宁可保守，也不胡说的 Agent。**
-
+MIT

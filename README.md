@@ -1,214 +1,124 @@
-# 🧠 Code Analysis Agent (Week 4)
+# Agent From Scratch
 
-> A **controlled, explainable, and non-hallucinating** code analysis Agent  
-> Currently supports **single-file Java backend code analysis only**
+> Build an **agent system from first principles** — controllable, testable, and evolvable.
+
+This repository documents a week-by-week construction of an Agent kernel without relying on heavyweight frameworks (e.g. LangGraph). By **Week 06**, the system reaches a *closed-loop, reviewable, traceable* execution architecture.
 
 🌐 **Language**: English | [简体中文](README.zh-CN.md)
 
 ---
 
-## What is this?
+## ✨ Design Philosophy
 
-This is a **single-purpose Agent** designed to analyze backend code (Java) **only within its proven capability boundaries**.
-
-It uses an explicit **state-driven execution model** and **control decisions** to ensure that:
-
-- It does not hallucinate
-- It does not overclaim certainty
-- It clearly states limitations when information is insufficient
+* **Kernel-first**: agent capability emerges from a small, explicit execution loop
+* **Single Source of Truth**: state transitions are explicit and serializable
+* **Plan → Execute → Review**: every task must pass through review
+* **Traceable by default**: every run produces a replayable trace
+* **Framework-light**: avoid black-box orchestration
 
 ---
 
-## Why does this Agent exist?
+## 🧠 Week 06: What Is Completed
 
-Most AI-based code analysis tools suffer from:
+By the end of Week 06, the system achieves:
 
-1. **Overconfidence** under insufficient context  
-2. **Lack of explainability** (black-box outputs)  
-3. **Uncontrolled execution flows** after failures  
+### 1. Explicit Agent Kernel
 
-This project takes a different stance:
+Located in `src/agent/kernel.py`
 
-> **Do less — but do it reliably, traceably, and honestly.**
+Responsibilities:
 
----
+* Drive the **Think → Act → Evaluate → Reflect** loop
+* Enforce execution boundaries
+* Never embed business logic
 
-## Design Principles
-
-- ✅ Single-task Agent (code analysis only)
-- ✅ Explicit state machine (state is the source of truth)
-- ✅ Failure is visible and recorded
-- ✅ Uncertainty is explicitly modeled
-- ❌ No business intent guessing
-- ❌ No project-level analysis
-- ❌ No code execution
+The kernel is deterministic given `(state, action)`.
 
 ---
 
-## Supported Scope (Week 4)
+### 2. Task Planning & Crew Loop
 
-### ✅ Supported
+Located in `src/crew` and `src/orchestration/crew_loop.py`
 
-- Java **single-file** backend code
-- Method-level / class-level risk detection
-- Uncertain risk labeling (`confidence = low`)
-- Structured analysis reports
-- CLI-based execution
+* `Planner` produces a `TaskPlan`
+* `Executor` runs subtasks
+* `Reviewer` validates outputs
+* Loop continues until all subtasks are completed or failed
 
-### ❌ Not Supported
-
-- Project-level dependency analysis
-- Cross-file call graph analysis
-- Runtime behavior inference
-- Performance benchmarking or security scanning
+This replaces LangGraph-style DAGs with a **linear, inspectable control loop**.
 
 ---
 
-## Architecture Snapshot (Week 05)
+### 3. Unified State & Schema
+
+Located in `src/schema` and `src/agent/state.py`
+
+* Task status is explicit (`PENDING / IN_PROGRESS / COMPLETED / FAILED`)
+* State is serializable
+* No hidden side effects
+
+---
+
+### 4. Execution Tracing
+
+Located in `src/orchestration/tracer.py`
+
+Each run records:
+
+* Run start / finish
+* Task start / completion
+* Review results
+
+This enables:
+
+* Debugging
+* Replay
+* Future resumability
+
+---
+
+## 📂 Project Structure
 
 ```
-
-User Input
-↓
-PlannerAgent → TaskPlan
-↓
-ExecutorAgent → Workflow / Free Execution
-↓
-ReviewerAgent
-↓
-Final Output
-
-````
-
-Key Features:
-
-Role-based agent architecture
-
-Structured task planning
-
-Reusable domain workflows
-
-CLI runnable entry
-
-Execution trace logging
----
-
-## Core Architecture
-
-### AgentState — State is the First-Class Citizen
-
-All behaviors are driven by state transitions.
-
-```python
-AgentState = {
-  user_input,
-  objective,
-  plan,
-  current_step,
-  memory,
-  scratchpad,
-  history,
-  step_success,
-  retry_count,
-  control_decision
-}
-````
-
----
-
-### AgentKernel — Execution Controller
-
-Execution loop:
-
-```
-think → action → evaluate → reflect → control_decision
-```
-
-Rules:
-
-* `evaluate` cannot be skipped
-* `reflect` always runs
-* Control decisions are explicit and limited
-
----
-
-### Risk Model
-
-```json
-{
-  "id": "uuid",
-  "title": "Potential Null Pointer Risk",
-  "description": "...",
-  "severity": "high | medium | low",
-  "confidence": "high | medium | low",
-  "type": "method | class",
-  "position": "Class.method()"
-}
-```
-
-**Important distinction:**
-
-* `severity` = impact if true
-* `confidence` = certainty of correctness
-
----
-
-## Failure & Uncertainty Policy
-
-### Returns “Insufficient Information” when:
-
-* Input code is too trivial
-* No analyzable structure exists
-* Context is fundamentally missing
-
-### Task terminates when:
-
-* Input is not code
-* Repeated failures exceed retry limit
-
-### Confidence is downgraded when:
-
-* Context relies on assumptions
-* Behavior depends on framework conventions
-* Risk is inferred but not provable
-
----
-
-## CLI Usage: How to Run
-```python
-python main.py "Your complex task here"
-```
-
-Example:
-```python
-python main.py "Analyze the risk profile of this project and generate a report"
-```
-
----
-
-## Project Structure
-
-```
-agent-from-scratch/
-├── agent/
-│   ├── kernel.py
-│   ├── state.py
+src/
+├── agent/            # Agent kernel & cognitive steps
 │   ├── think.py
 │   ├── action.py
 │   ├── evaluate.py
-│   └── reflect.py
-├── src/
-│   └── main.py
-├── README.md
-└── README.zh-CN.md
+│   ├── reflect.py
+│   ├── kernel.py
+│   └── state.py
+│
+├── crew/             # Planner / Executor / Reviewer roles
+│
+├── orchestration/    # Execution loop & tracing
+│
+├── schema/           # Typed task & status definitions
+│
+├── examples/         # Minimal runnable demos
+│
+└── main.py           # CLI entry point
 ```
 
 ---
 
-## Week 4 Definition of Done
+## ▶️ Running an Example
 
-* [x] State-driven execution
-* [x] Traceable decision history
-* [x] Explicit uncertainty modeling
-* [x] Controlled failure handling
-* [x] CLI demonstration ready
+```bash
+python ./src/main.py  --show-plan "Analyze risks of this system"
+```
+
+---
+
+## 🧭 What Comes Next (Week 07+)
+
+* Resume-from-trace
+* Memory injection (long / short term)
+* Tool execution sandbox
+* Multi-plan comparison
+
+---
+
+## 📜 License
+
+MIT
