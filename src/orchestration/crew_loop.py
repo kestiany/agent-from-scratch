@@ -1,38 +1,45 @@
-from crew.base import BaseRole
-from crew.planner import PlannerAgent
-from crew.executor import ExecutorAgent
-from crew.reviewer import ReviewerAgent
-from orchestration.trace import ExecutionTracer
+import uuid
+from schema.status import TaskStatus
 
-class CrewLoop:
-    def __init__(self, planner: PlannerAgent, executor: ExecutorAgent, reviewer: ReviewerAgent, trace: ExecutionTracer):
-        self.planner = planner
-        self.executor = executor
-        self.reviewer = reviewer
-        self.trace = trace
+def run_agent_system(
+    user_input: str,
+    planner,
+    executor,
+    reviewer,
+    tracer,
+    resume_from_task_id: str | None = None
+):
+    run_id = str(uuid.uuid4())
 
-    def run(self, user_input: str):
-        self.trace.start_run(user_input
-                             )
-        # 1. Planner 拆任务
-        plan = self.planner.run(user_input)
-        self.trace.record_plan(plan)
+    plan = planner.run(user_input, run_id)
+    tracer.start_run(run_id, user_input)
+    tracer.record_plan(plan)
 
-        # 2. Executor 顺序执行每个子任务（内部仍是 Week4 kernel）
-        results = []
-        for subtask in plan.subtasks:
-            self.trace.start_task(subtask)
-            result = self.executor.run(subtask)
-            self.trace.record_execution(result)
+    while True:
+        task = plan.get_next_task()
+        if not task:
+            break
 
-            # Reviewer
-            review = self.reviewer.run(plan, result)
-            self.trace.record_review(result, review)
+        # Resume 支持（最小）
+        if resume_from_task_id and task.id < resume_from_task_id:
+            task.complete("[SKIPPED]")
+            continue
 
-            if review.passed:
-                results.append(result)
-            else:
-                pass
-        
-        self.trace.finish_run()
-        return results
+        tracer.start_task(task)
+        task.start()
+
+        result = executor.run(task)
+        review = reviewer.run(task, result)
+
+        tracer.record_review(task, review)
+
+        if review.passed:
+            task.complete(result)
+        else:
+            task.fail(review.comments)
+            tracer.task_done(task)
+            break
+
+        tracer.task_done(task)
+
+    return plan, tracer

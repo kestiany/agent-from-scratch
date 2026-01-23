@@ -2,13 +2,12 @@ from typing import TypedDict, Literal
 
 from agent.result import AgentResult
 from crew.base import BaseRole
-from crew.schema import TaskPlan
+from schema.task import TaskPlan
 
 class ReviewResult:
-    def __init__(self, passed: bool, comments: str, retry_suggested: bool = False):
+    def __init__(self, passed: bool, comments: str):
         self.passed = passed
         self.comments = comments
-        self.retry_suggested = retry_suggested
 
 class ReviewerAgent(BaseRole):
     def __init__(self, llm):
@@ -17,13 +16,21 @@ class ReviewerAgent(BaseRole):
             llm=llm
         )
         
-    def run(self, task_plan: TaskPlan, results: list[AgentResult]) -> ReviewResult:
+    def run(self, task: TaskPlan, result) -> ReviewResult:
+        prompt = f"""
+            请评估以下任务结果是否满足目标：
+            任务目标：
+            {task.objective}
+    
+            执行结果：
+            {result}
+
+            只回答：
+            - 是否通过（YES / NO）
+            - 简要理由
         """
-        输入：TaskPlan（子任务列表）
-        输出：ReviewResult（审核结果）
-        """
-        # prompt: 审核任务计划的合理性 + 给出审核意见 + 置信度评分
-        return ReviewResult(
-            passed=True,
-            comments="Review passed - placeholder implementation"
-        )
+
+        review = self.llm.generate(prompt)
+
+        passed = "YES" in review.upper()
+        return ReviewResult(passed, review)

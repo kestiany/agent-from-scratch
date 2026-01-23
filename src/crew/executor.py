@@ -1,6 +1,6 @@
 from agent.kernel import AgentKernel
 from agent.result import AgentResult
-from crew.schema import SubTask
+from schema.task import SubTask, TaskStatus
 from crew.base import BaseRole
 
 class ExecutorAgent(BaseRole):
@@ -22,7 +22,7 @@ class ExecutorAgent(BaseRole):
         else:
             raise ValueError(f"Unknown preferred engine: {task.preferred_engine}")
         
-        task.status = "done"
+        task.status = TaskStatus.COMPLETED
         task.result = result
         return task
     
