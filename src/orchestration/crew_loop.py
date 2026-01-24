@@ -1,4 +1,5 @@
 import uuid
+from schema.experience import TaskExperience
 from schema.status import TaskStatus
 
 def run_agent_system(
@@ -42,4 +43,19 @@ def run_agent_system(
 
         tracer.task_done(task)
 
-    return plan, tracer
+    taskExperience = build_task_experience(run_id=run_id, plan=plan, tracer=tracer)
+    return plan, tracer, taskExperience
+
+def build_task_experience(
+    run_id: str,
+    plan,
+    tracer
+) -> TaskExperience:
+    return TaskExperience(
+        task_id=run_id,
+        plan_outline=extract_plan_signature(plan),
+        result=extract_final_result(plan),
+        cost_profile=tracer.cost_profile(),
+        reviewer_summary=extract_reviewer_summary(tracer),
+        created=datetime.utcnow()
+    )
