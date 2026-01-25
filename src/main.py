@@ -95,7 +95,7 @@ def main():
     reviewer = ReviewerAgent(llm)
     tracer = ExecutionTracer()
 
-    plan, tracer = run_agent_system(
+    plan, tracer, pattern = run_agent_system(
         user_input=args.task,
         planner=planner,
         executor=executor,

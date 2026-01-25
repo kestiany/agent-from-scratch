@@ -1,4 +1,5 @@
 import uuid
+from memory import experience_store
 from schema.experience import TaskExperience
 from schema.status import TaskStatus
 
@@ -44,6 +45,15 @@ def run_agent_system(
         tracer.task_done(task)
 
     taskExperience = build_task_experience(run_id=run_id, plan=plan, tracer=tracer)
+    experience_store.add(
+        TaskExperience(
+            task_id=run_id,
+            plan_outline=...,
+            result=...,
+            cost_profile=...,
+            reviewer_summary=...,
+        )
+    )
     return plan, tracer, taskExperience
 
 def build_task_experience(
