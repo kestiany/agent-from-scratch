@@ -76,28 +76,59 @@ This enables:
 * Future resumability
 
 ---
+### Week 07 — Experience-Aware Runtime
+
+Week 07 introduces **experience as a first-class runtime concept**.
+
+The system now:
+
+* Records structured task experiences
+* Extracts behavior patterns from past runs
+* Generates advisory knowledge (not hard rules)
+* Injects experience-based suggestions into planning — optionally
+
+#### Key additions:
+
+* **Experience Store**  
+  Persistent, factual records of task executions
+
+* **Pattern Extraction**  
+  Identifies repeated failure, inefficiency, or success patterns
+
+* **Advisory Memory**  
+  Human-readable, explainable suggestions derived from experience
+
+* **Planner Advisory Injection**  
+  Planner may consult advisory memory, but is never forced to follow it
+
+> ⚠️ The system does **not** self-modify or auto-learn.  
+> Experience influences decisions **only through explicit, inspectable context**.
+
+---
 
 ## 📂 Project Structure
 
 ```
 src/
-├── agent/            # Agent kernel & cognitive steps
-│   ├── think.py
-│   ├── action.py
-│   ├── evaluate.py
-│   ├── reflect.py
-│   ├── kernel.py
-│   └── state.py
+├── agent/ # Agent kernel & cognitive steps
+│ ├── think.py
+│ ├── action.py
+│ ├── evaluate.py
+│ ├── reflect.py
+│ ├── kernel.py
+│ └── state.py
 │
-├── crew/             # Planner / Executor / Reviewer roles
+├── crew/ # Planner / Executor / Reviewer roles
 │
-├── orchestration/    # Execution loop & tracing
+├── orchestration/ # Execution loop, tracer, runtime glue
 │
-├── schema/           # Typed task & status definitions
+├── memory/ # Experience store & advisory memory
 │
-├── examples/         # Minimal runnable demos
+├── schema/ # Typed task, result, experience schemas
 │
-└── main.py           # CLI entry point
+├── examples/ # Minimal runnable demos
+│
+└── main.py # CLI entry point
 ```
 
 ---
@@ -105,17 +136,17 @@ src/
 ## ▶️ Running an Example
 
 ```bash
-python ./src/main.py  --show-plan "Analyze risks of this system"
+python ./src/main.py --show-plan "Analyze risks of this system"
 ```
 
 ---
 
-## 🧭 What Comes Next (Week 07+)
+## 🧭 What Comes Next (Week 08+)
 
-* Resume-from-trace
-* Memory injection (long / short term)
-* Tool execution sandbox
+* Advisory confidence & decay
 * Multi-plan comparison
+* Tool execution sandbox
+* Controlled self-improvement loops
 
 ---
 

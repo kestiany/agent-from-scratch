@@ -60,11 +60,31 @@
 * Review 结果
 
 为后续的：
+为 Debug / Replay / Resume 打下基础。
 
-* Debug
-* Replay
-* Resume
-  打下基础。
+---
+
+### 第 07 周：经验感知型 Runtime
+
+第 07 周的核心变化是：  
+**经验成为系统的一等公民**。
+
+系统新增能力：
+
+* 记录结构化任务经验
+* 从历史执行中提取模式
+* 生成可解释的经验建议
+* 在规划阶段“参考经验”，但不强制执行
+
+#### 新增模块：
+
+* **Experience Store**：事实层，记录发生过什么
+* **Pattern Extractor**：识别重复行为模式
+* **Advisory Memory**：从经验中总结的建议层
+* **Planner Advisory Injection**：Planner 可选择性使用建议
+
+> ⚠️ 系统不会自动学习或自我修改。  
+> 所有经验影响都必须是**显式、可解释、可关闭的**。
 
 ---
 
@@ -72,12 +92,13 @@
 
 ```
 src/
-├── agent/            # Agent 内核与认知步骤
-├── crew/             # Planner / Executor / Reviewer
-├── orchestration/    # 执行循环与追踪
-├── schema/           # 状态与任务定义
-├── examples/         # 示例
-└── main.py           # CLI 入口
+├── agent/ # Agent 内核与认知步骤
+├── crew/ # Planner / Executor / Reviewer
+├── orchestration/ # 执行循环与运行时调度
+├── memory/ # 经验存储与建议记忆
+├── schema/ # 任务 / 结果 / 经验 Schema
+├── examples/ # 示例
+└── main.py # CLI 入口
 ```
 
 ---
@@ -85,17 +106,17 @@ src/
 ## ▶️ 运行示例
 
 ```bash
-python ./src/main.py  --show-plan "分析该系统的主要风险"
+python ./src/main.py --show-plan "分析该系统的主要风险"
 ```
 
 ---
 
-## 🧭 接下来（第 07 周以后）
+## 🧭 接下来（第 08 周以后）
 
-* 基于 Trace 的中断 / 恢复
-* Memory Layer（长期 / 短期）
+* 建议可信度与衰减机制
+* 多方案规划对比
 * Tool 执行隔离
-* 多方案对比
+* 可控自我改进回路
 
 ---
 
