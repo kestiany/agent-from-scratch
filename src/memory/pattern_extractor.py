@@ -1,3 +1,9 @@
+from collections import defaultdict
+from datetime import datetime
+import uuid
+from schema.pattern import BehaviorPattern
+
+
 class PatternExtractor:
 
     def extract(self, experiences):
