@@ -1,9 +1,12 @@
+from agent.bias import BiasProfile
+from agent.bias_builder import BiasBuilder
 from agent.state import AgentState
 from agent.think import think
 from agent.action import action
 from agent.evaluate import evaluate
 from agent.reflect import reflect
 from agent.result import AgentResult
+from memory import advisory_memory
 
 class AgentKernel:
     def __init__(self, max_steps: int = 5):
@@ -28,6 +31,10 @@ class AgentKernel:
         return self._finalize(state)
     
     def _init_state(self, user_input: str) -> AgentState:
+        advisories = advisory_memory.query({
+            "task_type": "risk_detection"
+        })
+        
         return {
             "user_input": user_input,
             "objective": "Analyze code and identify potential risks",
@@ -52,7 +59,8 @@ class AgentKernel:
             "insufficient_info": False,
             "confidence_level": 1.0,
             "terminated": False,
-            "termination_reason": None
+            "termination_reason": None,
+            "bias": BiasBuilder().build(advisories=advisories)
         }
 
     def _finalize(self, state: AgentState) -> AgentResult:

@@ -20,9 +20,13 @@ def action(state: AgentState) -> AgentState:
         state["step_success"] = True
 
     elif step == "risk_qualification":
+        bias = state["bias"]
         qualified = []
         for r in state["memory"]:
-            r["confidence"] = "medium"
+            if bias.risk_tolerance < 0.4 :
+                r["confidence"] = "medium"
+            else:
+                r["confidence"] = "low"
             qualified.append(r)
         state["memory"] = qualified
         state["step_success"] = True

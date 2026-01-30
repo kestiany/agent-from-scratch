@@ -1,5 +1,7 @@
 from typing import TypedDict, List, Optional, Literal
 
+from agent.bias import BiasProfile
+
 ControlDecision = Literal["continue", "retry", "replan"]
 
 AnalysisStep = Literal[
@@ -49,4 +51,6 @@ class AgentState(TypedDict):
     confidence_level: float
     terminated: bool
     termination_reason: Optional[str]
+
+    bias: BiasProfile
 

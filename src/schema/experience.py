@@ -16,3 +16,5 @@ class TaskExperience:
     reviewer_Summary: ReviewerSummary
     created: datetime
 
+    execution_profile: dict # retry / terminate / insufficient_info etc
+
