@@ -141,12 +141,26 @@ python ./src/main.py --show-plan "Analyze risks of this system"
 
 ---
 
-## 🧭 What Comes Next (Week 08+)
+## 🧭 Week 08 — Strategy & Behavioral Differentiation
+
+Week 08 shifts focus from *adding features* to *shaping behavior*:
+
+* Multi-plan planning (Planner K=3)
+* Explicit failure / success patterns
+* Bias-driven failure handling in Executor
+* Stability scenarios for long-running agents
+
+The agent now exhibits consistent and predictable behavioral styles,
+moving from a tool-like system toward a behavioral runtime.
+
+---
+
+## 🧭 What Comes Next (Week 09+)
 
 * Advisory confidence & decay
-* Multi-plan comparison
-* Tool execution sandbox
-* Controlled self-improvement loops
+* Directional convergence (choose one)
+* Long-running stability
+* Cost & error observability
 
 ---
 
